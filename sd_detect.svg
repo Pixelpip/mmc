@@ -1,0 +1,211 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2665 1203" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg-image { width: 2665px; height: 1203px; }
+      .box-link { cursor: pointer; outline: none; }
+      .box-rect {
+        fill: rgba(37, 99, 235, 0.0);
+        stroke: transparent;
+        stroke-width: 2.5;
+        rx: 3px;
+        ry: 3px;
+        transition: fill 0.15s ease, stroke 0.15s ease, filter 0.15s ease;
+      }
+      .box-link:hover .box-rect,
+      .box-link:focus .box-rect {
+        fill: rgba(37, 99, 235, 0.15);
+        stroke: #1d4ed8;
+        filter: drop-shadow(0 0 5px rgba(29, 78, 216, 0.5));
+      }
+      .box-link:active .box-rect {
+        fill: rgba(29, 78, 216, 0.28);
+        stroke: #1e40af;
+      }
+    </style>
+  </defs>
+  <!-- Underlying Diagram Image -->
+  <image class="bg-image" href="sd_detect.png" xlink:href="sd_detect.png" x="0" y="0" width="2665" height="1203" />
+  <!-- Clickable Interactive Boxes -->
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/include_2linux_2mmc_2sdhci_8h.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/include_2linux_2mmc_2sdhci_8h.html" target="_blank" class="box-link" id="box-1" aria-label="irq_isr_status_changed">
+    <rect class="box-rect" x="969" y="26" width="245" height="51" />
+    <title>irq_isr_status_changed
+File: drivers/mmc/host/sdhci.c
+Role: Host controller card detect interrupt service routine (ISR)
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/include_2linux_2mmc_2host_8h.html#a7744f1078fd46250494b6116ab002339" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/include_2linux_2mmc_2host_8h.html#a7744f1078fd46250494b6116ab002339" target="_blank" class="box-link" id="box-2" aria-label="mmc_detect_changed()">
+    <rect class="box-rect" x="979" y="125" width="225" height="51" />
+    <title>mmc_detect_changed()
+File: drivers/mmc/core/core.c
+Role: Process change of state on MMC socket and schedule debounce worker
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" target="_blank" class="box-link" id="box-3" aria-label="mmc_schedule_delayed_work(&amp;host-&gt;detect, delay)">
+    <rect class="box-rect" x="844" y="223" width="495" height="51" />
+    <title>mmc_schedule_delayed_work(&amp;host-&gt;detect, delay)
+File: drivers/mmc/core/core.c
+Role: Queue debounce delay work into kernel workqueue system
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" target="_blank" class="box-link" id="box-4" aria-label="mmc_rescan(struct work_struct *work)">
+    <rect class="box-rect" x="899" y="322" width="385" height="51" />
+    <title>mmc_rescan(struct work_struct *work)
+File: drivers/mmc/core/core.c
+Role: Workqueue handler for card detect / slot rescanning &amp; initialization
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" target="_blank" class="box-link" id="box-5" aria-label="mmc_rescan_try_freq(struct mmc_host *host, unsigned freq)">
+    <rect class="box-rect" x="794" y="421" width="595" height="51" />
+    <title>mmc_rescan_try_freq(struct mmc_host *host, unsigned freq)
+File: drivers/mmc/core/core.c
+Role: Try to initialize host and bus at given clock frequency ladder
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" target="_blank" class="box-link" id="box-6" aria-label="mmc_power_up(struct mmc_host *host)">
+    <rect class="box-rect" x="25" y="519" width="375" height="51" />
+    <title>mmc_power_up(struct mmc_host *host)
+File: drivers/mmc/core/core.c
+Role: Ramp up host controller power supply and apply power to bus
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" target="_blank" class="box-link" id="box-7" aria-label="mmc_hw_reset_for_init(struct mmc_host *host)">
+    <rect class="box-rect" x="421" y="519" width="466" height="51" />
+    <title>mmc_hw_reset_for_init(struct mmc_host *host)
+File: drivers/mmc/core/core.c
+Role: Perform hardware reset before initiating card probe
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/mmc__ops_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/mmc__ops_8c.html" target="_blank" class="box-link" id="box-8" aria-label="mmc_go_idle(struct mmc_host *host) /*send cmd0*/">
+    <rect class="box-rect" x="909" y="519" width="365" height="51" />
+    <title>mmc_go_idle(struct mmc_host *host) /*send cmd0*/
+File: drivers/mmc/core/mmc_ops.c
+Role: Issue CMD0 (GO_IDLE_STATE) to bring cards to Idle state
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/sd__ops_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/sd__ops_8c.html" target="_blank" class="box-link" id="box-9" aria-label="mmc_send_if_cond(struct mmc_host *host, u32 ocr) /*send cmd8, check if support sd2.0 cards*/">
+    <rect class="box-rect" x="1296" y="519" width="506" height="51" />
+    <title>mmc_send_if_cond(struct mmc_host *host, u32 ocr) /*send cmd8, check if support sd2.0 cards*/
+File: drivers/mmc/core/sd_ops.c
+Role: Issue CMD8 (SEND_IF_COND) to verify voltage operating range &amp; SD 2.0+ compatibility
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/mmc_2core_2sd_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/mmc_2core_2sd_8c.html" target="_blank" class="box-link" id="box-10" aria-label="mmc_attach_sdio/sd/mmc(struct mmc_host *host) /*test which protocol support, now using sd as example*/">
+    <rect class="box-rect" x="1823" y="519" width="585" height="51" />
+    <title>mmc_attach_sdio/sd/mmc(struct mmc_host *host) /*test which protocol support, now using sd as example*/
+File: drivers/mmc/core/sd.c
+Role: Probe card protocol support (SDIO -&gt; SD -&gt; MMC); attach SD card bus
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/structmmc__host__ops.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/structmmc__host__ops.html" target="_blank" class="box-link" id="box-11" aria-label="host-&gt;ops-&gt;hw_reset(host)">
+    <rect class="box-rect" x="25" y="618" width="275" height="51" />
+    <title>host-&gt;ops-&gt;hw_reset(host)
+File: include/linux/mmc/host.h
+Role: Hardware-specific reset callback defined in struct mmc_host_ops
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/sd__ops_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/sd__ops_8c.html" target="_blank" class="box-link" id="box-12" aria-label="mmc_send_app_op_cond() /*send cmd41*/">
+    <rect class="box-rect" x="321" y="618" width="245" height="51" />
+    <title>mmc_send_app_op_cond() /*send cmd41*/
+File: drivers/mmc/core/sd_ops.c
+Role: Send ACMD41 (SD_APP_OP_COND) to inquire operating condition &amp; card capacity
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/mmc_2core_2sd_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/mmc_2core_2sd_8c.html" target="_blank" class="box-link" id="box-13" aria-label="mmc_sd_attach_bus_ops(struct mmc_host *host)">
+    <rect class="box-rect" x="588" y="618" width="466" height="51" />
+    <title>mmc_sd_attach_bus_ops(struct mmc_host *host)
+File: drivers/mmc/core/sd.c
+Role: Attach SD specific bus operations table to the MMC host
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" target="_blank" class="box-link" id="box-14" aria-label="mmc_select_voltage(struct mmc_host *host, u32 ocr)">
+    <rect class="box-rect" x="1074" y="618" width="526" height="51" />
+    <title>mmc_select_voltage(struct mmc_host *host, u32 ocr)
+File: drivers/mmc/core/core.c
+Role: Select highest mutually supported voltage between host and card OCR
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/mmc_2core_2sd_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/mmc_2core_2sd_8c.html" target="_blank" class="box-link" id="box-15" aria-label="mmc_sd_init_card() /*alloc mmc_card*/">
+    <rect class="box-rect" x="1621" y="618" width="205" height="51" />
+    <title>mmc_sd_init_card() /*alloc mmc_card*/
+File: drivers/mmc/core/sd.c
+Role: Allocate mmc_card structure, read CID/CSD/SCR, and initialize SD card
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/structmmc__card.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/structmmc__card.html" target="_blank" class="box-link" id="box-16" aria-label="mmc_add_card(struct mmc_card *card)">
+    <rect class="box-rect" x="1848" y="618" width="375" height="51" />
+    <title>mmc_add_card(struct mmc_card *card)
+File: include/linux/mmc/card.h
+Role: Register initialized card device into the Linux driver model device tree
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/include_2linux_2mmc_2host_8h.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/include_2linux_2mmc_2host_8h.html" target="_blank" class="box-link" id="box-17" aria-label="mmc_claim_host(struct mmc_host *host)">
+    <rect class="box-rect" x="2245" y="618" width="395" height="51" />
+    <title>mmc_claim_host(struct mmc_host *host)
+File: include/linux/mmc/host.h
+Role: Acquire exclusive claim lock on the host controller for bus transactions
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2core_2core_8c.html" target="_blank" class="box-link" id="box-18" aria-label="mmc_set_ios()">
+    <rect class="box-rect" x="1259" y="717" width="155" height="51" />
+    <title>mmc_set_ios()
+File: drivers/mmc/core/core.c
+Role: Pass updated clock, power, voltage, and bus configuration to host driver
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2base_2core_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2base_2core_8c.html" target="_blank" class="box-link" id="box-19" aria-label="device_add(&amp;card-&gt;dev)">
+    <rect class="box-rect" x="1913" y="717" width="245" height="51" />
+    <title>device_add(&amp;card-&gt;dev)
+File: drivers/base/core.c
+Role: Register device with sysfs, notify userspace (uevent), and add to bus
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2base_2base_8h_source.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2base_2base_8h_source.html" target="_blank" class="box-link" id="box-20" aria-label="bus_probe_device(dev)">
+    <rect class="box-rect" x="1918" y="815" width="235" height="51" />
+    <title>bus_probe_device(dev)
+File: drivers/base/base.h
+Role: Probe driver matches on bus to bind appropriate driver to new card device
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2card_2block_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2card_2block_8c.html" target="_blank" class="box-link" id="box-21" aria-label="mmc_blk_probe(struct mmc_card *card) /*in block.c*/">
+    <rect class="box-rect" x="1843" y="914" width="385" height="51" />
+    <title>mmc_blk_probe(struct mmc_card *card) /*in block.c*/
+File: drivers/mmc/card/block.c
+Role: MMC block device driver probe callback handling block layer integration
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2card_2block_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2card_2block_8c.html" target="_blank" class="box-link" id="box-22" aria-label="mmc_blk_alloc(struct mmc_card *card)">
+    <rect class="box-rect" x="1511" y="1013" width="385" height="51" />
+    <title>mmc_blk_alloc(struct mmc_card *card)
+File: drivers/mmc/card/block.c
+Role: Allocate mmc_blk_data structure and request queue for block transfer
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2card_2block_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2card_2block_8c.html" target="_blank" class="box-link" id="box-23" aria-label="mmc_blk_alloc_parts()">
+    <rect class="box-rect" x="1918" y="1013" width="235" height="51" />
+    <title>mmc_blk_alloc_parts()
+File: drivers/mmc/card/block.c
+Role: Allocate hardware partitions (boot partitions, RPMB, GP partitions)
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2card_2block_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2card_2block_8c.html" target="_blank" class="box-link" id="box-24" aria-label="mmc_add_disk(struct mmc_blk_data *md)">
+    <rect class="box-rect" x="2174" y="1013" width="395" height="51" />
+    <title>mmc_add_disk(struct mmc_blk_data *md)
+File: drivers/mmc/card/block.c
+Role: Attach gendisk structure to block device and register with kernel
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2card_2block_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/drivers_2mmc_2card_2block_8c.html" target="_blank" class="box-link" id="box-25" aria-label="mmc_blk_alloc_req() /* minor number allocation */">
+    <rect class="box-rect" x="1226" y="1111" width="955" height="65" />
+    <title>mmc_blk_alloc_req() /* minor number allocation */
+File: drivers/mmc/card/block.c
+Role: Allocate queue request and device minor numbers (step of 8 minors per card)
+Click to open Huihoo Kernel Docs</title>
+  </a>
+  <a xlink:href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/genhd_8c.html" href="https://docs.huihoo.com/doxygen/linux/kernel/3.7/genhd_8c.html" target="_blank" class="box-link" id="box-26" aria-label="add_disk(struct gendisk *disk)">
+    <rect class="box-rect" x="2209" y="1118" width="325" height="51" />
+    <title>add_disk(struct gendisk *disk)
+File: block/genhd.c
+Role: Publish block device disk to userspace, scan partition table, enable I/O
+Click to open Huihoo Kernel Docs</title>
+  </a>
+</svg>

@@ -1,0 +1,236 @@
+[
+  {
+    "id": "box-1",
+    "label": "irq_isr_status_changed",
+    "x": 969.0,
+    "y": 26.0,
+    "width": 245.0,
+    "height": 51.0,
+    "raw_title": "irq_isr_status_changed\nFile: drivers/mmc/host/sdhci.c\nRole: Host controller card detect interrupt service routine (ISR)\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-2",
+    "label": "mmc_detect_changed()",
+    "x": 979.0,
+    "y": 125.0,
+    "width": 225.0,
+    "height": 51.0,
+    "raw_title": "mmc_detect_changed()\nFile: drivers/mmc/core/core.c\nRole: Process change of state on MMC socket and schedule debounce worker\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-3",
+    "label": "mmc_schedule_delayed_work(&host->detect, delay)",
+    "x": 844.0,
+    "y": 223.0,
+    "width": 495.0,
+    "height": 51.0,
+    "raw_title": "mmc_schedule_delayed_work(&host->detect, delay)\nFile: drivers/mmc/core/core.c\nRole: Queue debounce delay work into kernel workqueue system\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-4",
+    "label": "mmc_rescan(struct work_struct *work)",
+    "x": 899.0,
+    "y": 322.0,
+    "width": 385.0,
+    "height": 51.0,
+    "raw_title": "mmc_rescan(struct work_struct *work)\nFile: drivers/mmc/core/core.c\nRole: Workqueue handler for card detect / slot rescanning & initialization\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-5",
+    "label": "mmc_rescan_try_freq(struct mmc_host *host, unsigned freq)",
+    "x": 794.0,
+    "y": 421.0,
+    "width": 595.0,
+    "height": 51.0,
+    "raw_title": "mmc_rescan_try_freq(struct mmc_host *host, unsigned freq)\nFile: drivers/mmc/core/core.c\nRole: Try to initialize host and bus at given clock frequency ladder\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-6",
+    "label": "mmc_power_up(struct mmc_host *host)",
+    "x": 25.0,
+    "y": 519.0,
+    "width": 375.0,
+    "height": 51.0,
+    "raw_title": "mmc_power_up(struct mmc_host *host)\nFile: drivers/mmc/core/core.c\nRole: Ramp up host controller power supply and apply power to bus\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-7",
+    "label": "mmc_hw_reset_for_init(struct mmc_host *host)",
+    "x": 421.0,
+    "y": 519.0,
+    "width": 466.0,
+    "height": 51.0,
+    "raw_title": "mmc_hw_reset_for_init(struct mmc_host *host)\nFile: drivers/mmc/core/core.c\nRole: Perform hardware reset before initiating card probe\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-8",
+    "label": "mmc_go_idle(struct mmc_host *host) /*send cmd0*/",
+    "x": 909.0,
+    "y": 519.0,
+    "width": 365.0,
+    "height": 51.0,
+    "raw_title": "mmc_go_idle(struct mmc_host *host) /*send cmd0*/\nFile: drivers/mmc/core/mmc_ops.c\nRole: Issue CMD0 (GO_IDLE_STATE) to bring cards to Idle state\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-9",
+    "label": "mmc_send_if_cond(struct mmc_host *host, u32 ocr) /*send cmd8, check if support sd2.0 cards*/",
+    "x": 1296.0,
+    "y": 519.0,
+    "width": 506.0,
+    "height": 51.0,
+    "raw_title": "mmc_send_if_cond(struct mmc_host *host, u32 ocr) /*send cmd8, check if support sd2.0 cards*/\nFile: drivers/mmc/core/sd_ops.c\nRole: Issue CMD8 (SEND_IF_COND) to verify voltage operating range & SD 2.0+ compatibility\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-10",
+    "label": "mmc_attach_sdio/sd/mmc(struct mmc_host *host) /*test which protocol support, now using sd as example*/",
+    "x": 1823.0,
+    "y": 519.0,
+    "width": 585.0,
+    "height": 51.0,
+    "raw_title": "mmc_attach_sdio/sd/mmc(struct mmc_host *host) /*test which protocol support, now using sd as example*/\nFile: drivers/mmc/core/sd.c\nRole: Probe card protocol support (SDIO -> SD -> MMC); attach SD card bus\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-11",
+    "label": "host->ops->hw_reset(host)",
+    "x": 25.0,
+    "y": 618.0,
+    "width": 275.0,
+    "height": 51.0,
+    "raw_title": "host->ops->hw_reset(host)\nFile: include/linux/mmc/host.h\nRole: Hardware-specific reset callback defined in struct mmc_host_ops\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-12",
+    "label": "mmc_send_app_op_cond() /*send cmd41*/",
+    "x": 321.0,
+    "y": 618.0,
+    "width": 245.0,
+    "height": 51.0,
+    "raw_title": "mmc_send_app_op_cond() /*send cmd41*/\nFile: drivers/mmc/core/sd_ops.c\nRole: Send ACMD41 (SD_APP_OP_COND) to inquire operating condition & card capacity\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-13",
+    "label": "mmc_sd_attach_bus_ops(struct mmc_host *host)",
+    "x": 588.0,
+    "y": 618.0,
+    "width": 466.0,
+    "height": 51.0,
+    "raw_title": "mmc_sd_attach_bus_ops(struct mmc_host *host)\nFile: drivers/mmc/core/sd.c\nRole: Attach SD specific bus operations table to the MMC host\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-14",
+    "label": "mmc_select_voltage(struct mmc_host *host, u32 ocr)",
+    "x": 1074.0,
+    "y": 618.0,
+    "width": 526.0,
+    "height": 51.0,
+    "raw_title": "mmc_select_voltage(struct mmc_host *host, u32 ocr)\nFile: drivers/mmc/core/core.c\nRole: Select highest mutually supported voltage between host and card OCR\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-15",
+    "label": "mmc_sd_init_card() /*alloc mmc_card*/",
+    "x": 1621.0,
+    "y": 618.0,
+    "width": 205.0,
+    "height": 51.0,
+    "raw_title": "mmc_sd_init_card() /*alloc mmc_card*/\nFile: drivers/mmc/core/sd.c\nRole: Allocate mmc_card structure, read CID/CSD/SCR, and initialize SD card\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-16",
+    "label": "mmc_add_card(struct mmc_card *card)",
+    "x": 1848.0,
+    "y": 618.0,
+    "width": 375.0,
+    "height": 51.0,
+    "raw_title": "mmc_add_card(struct mmc_card *card)\nFile: include/linux/mmc/card.h\nRole: Register initialized card device into the Linux driver model device tree\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-17",
+    "label": "mmc_claim_host(struct mmc_host *host)",
+    "x": 2245.0,
+    "y": 618.0,
+    "width": 395.0,
+    "height": 51.0,
+    "raw_title": "mmc_claim_host(struct mmc_host *host)\nFile: include/linux/mmc/host.h\nRole: Acquire exclusive claim lock on the host controller for bus transactions\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-18",
+    "label": "mmc_set_ios()",
+    "x": 1259.0,
+    "y": 717.0,
+    "width": 155.0,
+    "height": 51.0,
+    "raw_title": "mmc_set_ios()\nFile: drivers/mmc/core/core.c\nRole: Pass updated clock, power, voltage, and bus configuration to host driver\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-19",
+    "label": "device_add(&card->dev)",
+    "x": 1913.0,
+    "y": 717.0,
+    "width": 245.0,
+    "height": 51.0,
+    "raw_title": "device_add(&card->dev)\nFile: drivers/base/core.c\nRole: Register device with sysfs, notify userspace (uevent), and add to bus\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-20",
+    "label": "bus_probe_device(dev)",
+    "x": 1918.0,
+    "y": 815.0,
+    "width": 235.0,
+    "height": 51.0,
+    "raw_title": "bus_probe_device(dev)\nFile: drivers/base/base.h\nRole: Probe driver matches on bus to bind appropriate driver to new card device\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-21",
+    "label": "mmc_blk_probe(struct mmc_card *card) /*in block.c*/",
+    "x": 1843.0,
+    "y": 914.0,
+    "width": 385.0,
+    "height": 51.0,
+    "raw_title": "mmc_blk_probe(struct mmc_card *card) /*in block.c*/\nFile: drivers/mmc/card/block.c\nRole: MMC block device driver probe callback handling block layer integration\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-22",
+    "label": "mmc_blk_alloc(struct mmc_card *card)",
+    "x": 1511.0,
+    "y": 1013.0,
+    "width": 385.0,
+    "height": 51.0,
+    "raw_title": "mmc_blk_alloc(struct mmc_card *card)\nFile: drivers/mmc/card/block.c\nRole: Allocate mmc_blk_data structure and request queue for block transfer\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-23",
+    "label": "mmc_blk_alloc_parts()",
+    "x": 1918.0,
+    "y": 1013.0,
+    "width": 235.0,
+    "height": 51.0,
+    "raw_title": "mmc_blk_alloc_parts()\nFile: drivers/mmc/card/block.c\nRole: Allocate hardware partitions (boot partitions, RPMB, GP partitions)\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-24",
+    "label": "mmc_add_disk(struct mmc_blk_data *md)",
+    "x": 2174.0,
+    "y": 1013.0,
+    "width": 395.0,
+    "height": 51.0,
+    "raw_title": "mmc_add_disk(struct mmc_blk_data *md)\nFile: drivers/mmc/card/block.c\nRole: Attach gendisk structure to block device and register with kernel\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-25",
+    "label": "mmc_blk_alloc_req() /* minor number allocation */",
+    "x": 1226.0,
+    "y": 1111.0,
+    "width": 955.0,
+    "height": 65.0,
+    "raw_title": "mmc_blk_alloc_req() /* minor number allocation */\nFile: drivers/mmc/card/block.c\nRole: Allocate queue request and device minor numbers (step of 8 minors per card)\nClick to open Huihoo Kernel Docs"
+  },
+  {
+    "id": "box-26",
+    "label": "add_disk(struct gendisk *disk)",
+    "x": 2209.0,
+    "y": 1118.0,
+    "width": 325.0,
+    "height": 51.0,
+    "raw_title": "add_disk(struct gendisk *disk)\nFile: block/genhd.c\nRole: Publish block device disk to userspace, scan partition table, enable I/O\nClick to open Huihoo Kernel Docs"
+  }
+]
