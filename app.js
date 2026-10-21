@@ -377,6 +377,39 @@
     elements.drawerProtocolBadge.textContent = box.protocol;
     elements.drawerDescription.innerHTML = `<strong>Role:</strong> ${escapeHtml(box.summary)}<br><br>${escapeHtml(box.details)}`;
 
+    // Call Hierarchy rendering (Caller & Callees)
+    const hierarchyEl = document.getElementById('drawer-call-hierarchy');
+    if (hierarchyEl) {
+      const callerBox = box.callerId ? SD_FLOW_DATA.find((b) => b.id === box.callerId) : null;
+      const calleeBoxes = (box.calleeIds || []).map((id) => SD_FLOW_DATA.find((b) => b.id === id)).filter(Boolean);
+
+      let callerHtml = callerBox 
+        ? `<button class="hierarchy-chip" data-jump-id="${callerBox.id}"><span class="chip-step">Step ${callerBox.step}</span> ${escapeHtml(callerBox.symbol || callerBox.label)}</button>`
+        : `<span class="hierarchy-none">Root Entry Point (Hardware Interrupt)</span>`;
+
+      let calleesHtml = calleeBoxes.length > 0
+        ? calleeBoxes.map((c) => `<button class="hierarchy-chip" data-jump-id="${c.id}"><span class="chip-step">Step ${c.step}</span> ${escapeHtml(c.symbol || c.label)}</button>`).join('')
+        : `<span class="hierarchy-none">Leaf function (End of call branch)</span>`;
+
+      hierarchyEl.innerHTML = `
+        <div class="hierarchy-flow-row">
+          <span class="hierarchy-label">Called by:</span>
+          ${callerHtml}
+        </div>
+        <div class="hierarchy-flow-row">
+          <span class="hierarchy-label">Calls:</span>
+          ${calleesHtml}
+        </div>
+      `;
+
+      hierarchyEl.querySelectorAll('[data-jump-id]').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          selectBox(btn.getAttribute('data-jump-id'), true);
+        });
+      });
+    }
+
     // Code snippet with basic syntax highlighting
     elements.drawerCodeSnippet.innerHTML = highlightKernelCode(box.code);
 

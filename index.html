@@ -93,7 +93,7 @@
       <button class="filter-pill" data-phase="power">
         <span class="pill-dot"></span>
         <span>3. Power &amp; Reset</span>
-        <span class="filter-count">4</span>
+        <span class="filter-count">5</span>
       </button>
       <button class="filter-pill" data-phase="protocol">
         <span class="pill-dot"></span>
@@ -103,12 +103,12 @@
       <button class="filter-pill" data-phase="card_init">
         <span class="pill-dot"></span>
         <span>5. Card Init &amp; Device</span>
-        <span class="filter-count">6</span>
+        <span class="filter-count">4</span>
       </button>
       <button class="filter-pill" data-phase="block">
         <span class="pill-dot"></span>
         <span>6. Block &amp; Disk</span>
-        <span class="filter-count">6</span>
+        <span class="filter-count">7</span>
       </button>
     </nav>
 
@@ -246,6 +246,17 @@
               <span>Subsystem &amp; Protocol Layer</span>
             </div>
             <span id="drawer-protocol-badge" class="protocol-badge-chip">Hardware IRQ</span>
+          </div>
+
+          <!-- Call Hierarchy Flow (Caller & Callees) -->
+          <div>
+            <div class="drawer-section-title">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>Call Tree Flow (Caller ➔ Callees)</span>
+            </div>
+            <div id="drawer-call-hierarchy" class="drawer-call-hierarchy">
+              <!-- Rendered dynamically -->
+            </div>
           </div>
 
           <!-- Description Section -->

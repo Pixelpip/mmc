@@ -968,6 +968,68 @@ html, body {
   font-weight: 600;
 }
 
+/* Call Hierarchy Tree in Drawer */
+.drawer-call-hierarchy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+}
+
+.hierarchy-flow-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+}
+
+.hierarchy-label {
+  color: var(--text-dim);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  min-width: 65px;
+}
+
+.hierarchy-chip {
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--accent-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hierarchy-chip:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: var(--accent-cyan);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.hierarchy-chip .chip-step {
+  font-size: 0.62rem;
+  color: var(--text-dim);
+}
+
+.hierarchy-none {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 0.7rem;
+}
+
 .drawer-description {
   font-size: 0.82rem;
   line-height: 1.55;

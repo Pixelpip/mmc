@@ -1,12 +1,18 @@
 /**
  * Linux MMC/SD Card Detection Call Flow - Complete Kernel Reference Data
  * Mapped to sd_detect.png (2665 x 1203)
+ * Ordered by authentic Linux Kernel Call Hierarchy & Execution Sequence (Caller -> Callee Tree)
  */
 
 const SD_FLOW_DATA = [
+  // =========================================================================
+  // Phase 1: Hardware Interrupt & Socket Debounce
+  // =========================================================================
   {
     id: "box-1",
     step: 1,
+    callerId: null,
+    calleeIds: ["box-2"],
     phase: "isr",
     phaseName: "ISR & Debounce",
     label: "irq_isr_status_changed",
@@ -20,7 +26,7 @@ const SD_FLOW_DATA = [
     height: 51.0,
     protocol: "Hardware IRQ",
     summary: "Host controller card detect interrupt service routine (ISR)",
-    details: "Triggered by physical card insertion or removal when the Card Detect (CD) pin changes state. The host controller hardware asserts an interrupt, and the SDHCI driver reads the interrupt status register (SDHCI_INT_STATUS) for SDHCI_INT_CARD_INSERT. It acknowledges the interrupt and schedules software handling.",
+    details: "Triggered by physical card insertion or removal when the Card Detect (CD) pin changes state. The host controller hardware asserts an interrupt, and the SDHCI driver reads the interrupt status register (SDHCI_INT_STATUS) for SDHCI_INT_CARD_INSERT. It acknowledges the interrupt and invokes mmc_detect_changed().",
     code: `static irqreturn_t sdhci_irq(int irq, void *dev_id)
 {
     struct sdhci_host *host = dev_id;
@@ -38,6 +44,8 @@ const SD_FLOW_DATA = [
   {
     id: "box-2",
     step: 2,
+    callerId: "box-1",
+    calleeIds: ["box-3"],
     phase: "isr",
     phaseName: "ISR & Debounce",
     label: "mmc_detect_changed()",
@@ -63,6 +71,8 @@ const SD_FLOW_DATA = [
   {
     id: "box-3",
     step: 3,
+    callerId: "box-2",
+    calleeIds: ["box-4"],
     phase: "isr",
     phaseName: "ISR & Debounce",
     label: "mmc_schedule_delayed_work(&host->detect, delay)",
@@ -82,11 +92,17 @@ const SD_FLOW_DATA = [
     return queue_delayed_work(system_freezable_wq, work, delay);
 }`
   },
+
+  // =========================================================================
+  // Phase 2: Rescan & Frequency Ladder
+  // =========================================================================
   {
     id: "box-4",
     step: 4,
+    callerId: "box-3",
+    calleeIds: ["box-5"],
     phase: "rescan",
-    phaseName: "Rescan & Frequency",
+    phaseName: "Rescan & Clock",
     label: "mmc_rescan(struct work_struct *work)",
     symbol: "mmc_rescan",
     file: "drivers/mmc/core/core.c",
@@ -117,8 +133,10 @@ const SD_FLOW_DATA = [
   {
     id: "box-5",
     step: 5,
+    callerId: "box-4",
+    calleeIds: ["box-6", "box-7", "box-8", "box-9", "box-10"],
     phase: "rescan",
-    phaseName: "Rescan & Frequency",
+    phaseName: "Rescan & Clock",
     label: "mmc_rescan_try_freq(struct mmc_host *host, unsigned freq)",
     symbol: "mmc_rescan_try_freq",
     file: "drivers/mmc/core/core.c",
@@ -154,9 +172,15 @@ const SD_FLOW_DATA = [
     return -EIO;
 }`
   },
+
+  // =========================================================================
+  // Phase 3: Power-Up, Hardware Reset & State Initialization
+  // =========================================================================
   {
     id: "box-6",
     step: 6,
+    callerId: "box-5",
+    calleeIds: [],
     phase: "power",
     phaseName: "Power & Reset",
     label: "mmc_power_up(struct mmc_host *host)",
@@ -169,7 +193,7 @@ const SD_FLOW_DATA = [
     height: 51.0,
     protocol: "Power Management",
     summary: "Ramp up host controller power supply and apply power to bus",
-    details: "Ramps up regulator voltages to supply power to the card socket, sets the bus power mode to MMC_POWER_UP, programs the initial clock to host->f_init (400kHz), and waits the specification-mandated power ramp delay before sending signals.",
+    details: "Called by mmc_rescan_try_freq(). Ramps up regulator voltages to supply power to the card socket, sets the bus power mode to MMC_POWER_UP, programs the initial clock to host->f_init (400kHz), and waits the specification-mandated power ramp delay before sending signals.",
     code: `void mmc_power_up(struct mmc_host *host, u32 ocr)
 {
     if (host->ios.power_mode == MMC_POWER_ON)
@@ -190,6 +214,8 @@ const SD_FLOW_DATA = [
   {
     id: "box-7",
     step: 7,
+    callerId: "box-5",
+    calleeIds: ["box-11"],
     phase: "power",
     phaseName: "Power & Reset",
     label: "mmc_hw_reset_for_init(struct mmc_host *host)",
@@ -202,7 +228,7 @@ const SD_FLOW_DATA = [
     height: 51.0,
     protocol: "Hardware Reset",
     summary: "Perform hardware reset before initiating card probe",
-    details: "Checks whether the host controller and board layout implement a dedicated hardware reset line (RST_n pin). If supported via host->ops->hw_reset, triggers a hard low pulse to force the card into a clean initial state.",
+    details: "Called by mmc_rescan_try_freq(). Checks whether the host controller implements a hardware reset hook. If supported, immediately calls host->ops->hw_reset(host) to assert RST_n.",
     code: `static void mmc_hw_reset_for_init(struct mmc_host *host)
 {
     if (!host->ops->hw_reset)
@@ -212,8 +238,39 @@ const SD_FLOW_DATA = [
 }`
   },
   {
-    id: "box-8",
+    id: "box-11",
     step: 8,
+    callerId: "box-7",
+    calleeIds: [],
+    phase: "power",
+    phaseName: "Power & Reset",
+    label: "host->ops->hw_reset(host)",
+    symbol: "mmc_host_ops",
+    file: "include/linux/mmc/host.h",
+    line: 110,
+    x: 25.0,
+    y: 618.0,
+    width: 275.0,
+    height: 51.0,
+    protocol: "Host Controller Ops",
+    summary: "Hardware-specific reset callback defined in struct mmc_host_ops",
+    details: "Invoked directly by mmc_hw_reset_for_init(). Host controller drivers (such as sdhci, dw_mmc, omap_hsmmc) implement this hook to perform platform-specific hardware reset sequences, GPIO pin toggles, or vendor reset registers.",
+    code: `struct mmc_host_ops {
+    void (*post_req)(struct mmc_host *host, struct mmc_request *req, int err);
+    void (*pre_req)(struct mmc_host *host, struct mmc_request *req);
+    void (*request)(struct mmc_host *host, struct mmc_request *req);
+    void (*set_ios)(struct mmc_host *host, struct mmc_ios *ios);
+    int  (*get_ro)(struct mmc_host *host);
+    int  (*get_cd)(struct mmc_host *host);
+    void (*hw_reset)(struct mmc_host *host);
+    ...
+};`
+  },
+  {
+    id: "box-8",
+    step: 9,
+    callerId: "box-5",
+    calleeIds: [],
     phase: "power",
     phaseName: "Power & Reset",
     label: "mmc_go_idle(struct mmc_host *host) /*send cmd0*/",
@@ -226,7 +283,7 @@ const SD_FLOW_DATA = [
     height: 51.0,
     protocol: "CMD0 (GO_IDLE_STATE)",
     summary: "Issue CMD0 (GO_IDLE_STATE) to bring cards to Idle state",
-    details: "Sends broadcast command CMD0 with argument 0x00000000. All connected cards on the bus reset their internal state machine and enter the Idle State. In SPI mode, CS must be pulled low; in SD native bus mode, all cards transition from any state back to idle.",
+    details: "Called by mmc_rescan_try_freq(). Sends broadcast command CMD0 with argument 0x00000000. All connected cards on the bus reset their internal state machine and enter the Idle State.",
     code: `int mmc_go_idle(struct mmc_host *host)
 {
     int err;
@@ -244,7 +301,9 @@ const SD_FLOW_DATA = [
   },
   {
     id: "box-9",
-    step: 9,
+    step: 10,
+    callerId: "box-5",
+    calleeIds: [],
     phase: "power",
     phaseName: "Power & Reset",
     label: "mmc_send_if_cond(struct mmc_host *host, u32 ocr) /*send cmd8, check if support sd2.0 cards*/",
@@ -257,7 +316,7 @@ const SD_FLOW_DATA = [
     height: 51.0,
     protocol: "CMD8 (SEND_IF_COND)",
     summary: "Issue CMD8 (SEND_IF_COND) to verify voltage operating range & SD 2.0+ compatibility",
-    details: "Sends CMD8 with argument containing supply voltage indicator (0x1 = 2.7-3.6V) and check pattern 0xAA. If the card echoes back response R7 with the exact same 0xAA pattern, the card supports SD Physical Layer Specification Version 2.00 or higher (SDHC/SDXC capacity support).",
+    details: "Called by mmc_rescan_try_freq(). Sends CMD8 with supply voltage indicator (0x1 = 2.7-3.6V) and test pattern 0xAA. If the card echoes back response R7 with the exact 0xAA pattern, the card supports SD Physical Layer Specification Version 2.00 or higher (SDHC/SDXC capacity support).",
     code: `int mmc_send_if_cond(struct mmc_host *host, u32 ocr)
 {
     struct mmc_command cmd = {0};
@@ -280,11 +339,17 @@ const SD_FLOW_DATA = [
     return 0;
 }`
   },
+
+  // =========================================================================
+  // Phase 4: Protocol Attach, App Op Cond & Voltage Setup
+  // =========================================================================
   {
     id: "box-10",
-    step: 10,
+    step: 11,
+    callerId: "box-5",
+    calleeIds: ["box-12", "box-13", "box-14", "box-15", "box-16", "box-17"],
     phase: "protocol",
-    phaseName: "Protocol & Bus Attach",
+    phaseName: "Protocol & Bus",
     label: "mmc_attach_sdio/sd/mmc(struct mmc_host *host) /*test which protocol support, now using sd as example*/",
     symbol: "mmc_attach_sd",
     altSymbol: "mmc_attach_sdio",
@@ -296,7 +361,7 @@ const SD_FLOW_DATA = [
     height: 51.0,
     protocol: "Protocol Identification",
     summary: "Probe card protocol support (SDIO -> SD -> MMC); attach SD card bus",
-    details: "The kernel systematically probes connected hardware protocol. First checks for SDIO cards via CMD5. If unacknowledged, invokes mmc_attach_sd() which sends ACMD41. If that succeeds, the bus is identified as standard SD memory card and SD bus ops are registered.",
+    details: "The kernel systematically probes protocol support. In SD mode, mmc_attach_sd() coordinates: ACMD41 inquiry, attaching bus operations table, voltage negotiation, card structure allocation, card initialization, driver registration, and claiming host.",
     code: `int mmc_attach_sd(struct mmc_host *host)
 {
     int err;
@@ -304,56 +369,30 @@ const SD_FLOW_DATA = [
 
     WARN_ON(!host->claimed);
 
-    /* ACMD41 probe to get card OCR */
+    /* 1. ACMD41 probe to get card OCR */
     err = mmc_send_app_op_cond(host, 0, &ocr);
     if (err)
         return err;
 
+    /* 2. Attach SD bus operations */
     mmc_sd_attach_bus_ops(host);
-    if (mmc_host_is_spi(host)) {
-        mmc_claim_host(host);
-        err = mmc_spi_read_ocr(host, 0, &ocr);
-        mmc_release_host(host);
-    }
 
+    /* 3. Voltage negotiation & IOS setup */
     rocr = mmc_select_voltage(host, ocr);
+
+    /* 4. Initialize card & register */
     err = mmc_sd_init_card(host, rocr, NULL);
     err = mmc_add_card(host->card);
     return 0;
 }`
   },
   {
-    id: "box-11",
-    step: 11,
-    phase: "protocol",
-    phaseName: "Protocol & Bus Attach",
-    label: "host->ops->hw_reset(host)",
-    symbol: "mmc_host_ops",
-    file: "include/linux/mmc/host.h",
-    line: 110,
-    x: 25.0,
-    y: 618.0,
-    width: 275.0,
-    height: 51.0,
-    protocol: "Host Controller Ops",
-    summary: "Hardware-specific reset callback defined in struct mmc_host_ops",
-    details: "Function pointer inside struct mmc_host_ops. Host controller drivers (such as sdhci, dw_mmc, omap_hsmmc) implement this hook to perform platform-specific hardware reset sequences, GPIO pin toggles, or vendor reset registers.",
-    code: `struct mmc_host_ops {
-    void (*post_req)(struct mmc_host *host, struct mmc_request *req, int err);
-    void (*pre_req)(struct mmc_host *host, struct mmc_request *req);
-    void (*request)(struct mmc_host *host, struct mmc_request *req);
-    void (*set_ios)(struct mmc_host *host, struct mmc_ios *ios);
-    int  (*get_ro)(struct mmc_host *host);
-    int  (*get_cd)(struct mmc_host *host);
-    void (*hw_reset)(struct mmc_host *host);
-    ...
-};`
-  },
-  {
     id: "box-12",
     step: 12,
+    callerId: "box-10",
+    calleeIds: [],
     phase: "protocol",
-    phaseName: "Protocol & Bus Attach",
+    phaseName: "Protocol & Bus",
     label: "mmc_send_app_op_cond() /*send cmd41*/",
     symbol: "mmc_send_app_op_cond",
     file: "drivers/mmc/core/sd_ops.c",
@@ -364,7 +403,7 @@ const SD_FLOW_DATA = [
     height: 51.0,
     protocol: "ACMD41 (SD_APP_OP_COND)",
     summary: "Send ACMD41 (SD_APP_OP_COND) to inquire operating condition & card capacity",
-    details: "Application-specific command: sends CMD55 (APP_CMD) followed by ACMD41 with HCS (High Capacity Support) bit set. The card replies with OCR register containing supported voltage windows and sets the power-up status busy bit (bit 31) when internal power-on init completes.",
+    details: "Called by mmc_attach_sd(). Application-specific command: sends CMD55 (APP_CMD) followed by ACMD41 with HCS (High Capacity Support) bit set. The card replies with OCR register containing supported voltage windows and sets busy bit 31 when internal initialization completes.",
     code: `int mmc_send_app_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 {
     struct mmc_command cmd = {0};
@@ -392,8 +431,10 @@ const SD_FLOW_DATA = [
   {
     id: "box-13",
     step: 13,
+    callerId: "box-10",
+    calleeIds: [],
     phase: "protocol",
-    phaseName: "Protocol & Bus Attach",
+    phaseName: "Protocol & Bus",
     label: "mmc_sd_attach_bus_ops(struct mmc_host *host)",
     symbol: "mmc_sd_attach_bus_ops",
     file: "drivers/mmc/core/sd.c",
@@ -404,7 +445,7 @@ const SD_FLOW_DATA = [
     height: 51.0,
     protocol: "Bus Operations",
     summary: "Attach SD specific bus operations table to the MMC host",
-    details: "Links the struct mmc_bus_ops table (specifically mmc_sd_ops) to host->bus_ops. This binds handlers for remove, detect, suspend, resume, runtime_suspend, and power_restore specifically tailored for SD protocol cards.",
+    details: "Called by mmc_attach_sd(). Links the struct mmc_bus_ops table (specifically mmc_sd_ops) to host->bus_ops. This binds handlers for remove, detect, suspend, resume, runtime_suspend, and power_restore specifically tailored for SD protocol cards.",
     code: `static const struct mmc_bus_ops mmc_sd_ops = {
     .remove = mmc_sd_remove,
     .detect = mmc_sd_detect,
@@ -422,8 +463,10 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
   {
     id: "box-14",
     step: 14,
+    callerId: "box-10",
+    calleeIds: ["box-18"],
     phase: "protocol",
-    phaseName: "Protocol & Bus Attach",
+    phaseName: "Protocol & Bus",
     label: "mmc_select_voltage(struct mmc_host *host, u32 ocr)",
     symbol: "mmc_select_voltage",
     file: "drivers/mmc/core/core.c",
@@ -434,7 +477,7 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
     height: 51.0,
     protocol: "OCR Negotiation",
     summary: "Select highest mutually supported voltage between host and card OCR",
-    details: "Masks the card's reported OCR voltage bitmask against the host controller's supported voltages (host->ocr_avail). Selects the highest common voltage bit, programs the host regulator via mmc_set_ios(), and returns the final negotiated OCR value.",
+    details: "Called by mmc_attach_sd(). Masks the card's reported OCR voltage bitmask against host->ocr_avail. Selects the highest common voltage bit and programs host I/O settings via mmc_set_ios().",
     code: `u32 mmc_select_voltage(struct mmc_host *host, u32 ocr)
 {
     int bit;
@@ -452,10 +495,46 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
 }`
   },
   {
-    id: "box-15",
+    id: "box-18",
     step: 15,
+    callerId: "box-14",
+    calleeIds: [],
+    phase: "protocol",
+    phaseName: "Protocol & Bus",
+    label: "mmc_set_ios()",
+    symbol: "mmc_set_ios",
+    file: "drivers/mmc/core/core.c",
+    line: 950,
+    x: 1259.0,
+    y: 717.0,
+    width: 155.0,
+    height: 51.0,
+    protocol: "Host IOS Configuration",
+    summary: "Pass updated clock, power, voltage, and bus configuration to host driver",
+    details: "Called by mmc_select_voltage() (and power/bus width transitions). Synchronizes struct mmc_ios with host controller hardware registers: programs Vdd voltage, clock frequency, timing mode, and bus width.",
+    code: `static void mmc_set_ios(struct mmc_host *host)
+{
+    struct mmc_ios *ios = &host->ios;
+
+    pr_debug("%s: clock %uHz busmode %u powermode %u cs %u Vdd %u width %u timing %u\\n",
+             mmc_hostname(host), ios->clock, ios->bus_mode,
+             ios->power_mode, ios->chip_select, ios->vdd,
+             ios->bus_width, ios->timing);
+
+    host->ops->set_ios(host, ios);
+}`
+  },
+
+  // =========================================================================
+  // Phase 5: Card Initialization & Linux Device Model Registration
+  // =========================================================================
+  {
+    id: "box-15",
+    step: 16,
+    callerId: "box-10",
+    calleeIds: [],
     phase: "card_init",
-    phaseName: "Card Init & Device Model",
+    phaseName: "Card Init & Device",
     label: "mmc_sd_init_card() /*alloc mmc_card*/",
     symbol: "mmc_sd_init_card",
     file: "drivers/mmc/core/sd.c",
@@ -466,7 +545,7 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
     height: 51.0,
     protocol: "Card Identification",
     summary: "Allocate mmc_card structure, read CID/CSD/SCR, and initialize SD card",
-    details: "Crucial SD initialization pipeline: 1) Allocates struct mmc_card, 2) Sends CMD2 (ALL_SEND_CID) to read unique card ID, 3) Sends CMD3 (SEND_RELATIVE_ADDR) to assign RCA (Relative Card Address), 4) Sends CMD9 to read CSD (Card Specific Data), 5) Sends CMD7 to select card, 6) Reads SCR and switches to 4-bit bus width & High Speed mode.",
+    details: "Called by mmc_attach_sd(). 1) Sends CMD2 (ALL_SEND_CID) to read unique card ID, 2) Allocates struct mmc_card, 3) Sends CMD3 (SEND_RELATIVE_ADDR) to assign RCA, 4) Sends CMD9 to read CSD (Card Specific Data), 5) Sends CMD7 to select card, 6) Reads SCR and switches bus width to 4-bit mode.",
     code: `static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
                             struct mmc_card *oldcard)
 {
@@ -492,9 +571,11 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
   },
   {
     id: "box-16",
-    step: 16,
+    step: 17,
+    callerId: "box-10",
+    calleeIds: ["box-19"],
     phase: "card_init",
-    phaseName: "Card Init & Device Model",
+    phaseName: "Card Init & Device",
     label: "mmc_add_card(struct mmc_card *card)",
     symbol: "mmc_add_card",
     file: "drivers/mmc/core/bus.c",
@@ -505,7 +586,7 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
     height: 51.0,
     protocol: "Driver Core / Bus",
     summary: "Register initialized card device into the Linux driver model device tree",
-    details: "Populates the card's struct device fields (device name mmc0:0001, dev.bus = &mmc_bus_type, dev.parent = &host->class_dev), initializes sysfs attributes (cid, csd, date, name, oemid, serial), and calls device_add(&card->dev).",
+    details: "Called by mmc_attach_sd() once card registers have been parsed. Sets device name (e.g. mmc0:0001), links bus type to mmc_bus_type, and delegates to device_add(&card->dev).",
     code: `int mmc_add_card(struct mmc_card *card)
 {
     int ret;
@@ -520,59 +601,12 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
 }`
   },
   {
-    id: "box-17",
-    step: 17,
-    phase: "card_init",
-    phaseName: "Card Init & Device Model",
-    label: "mmc_claim_host(struct mmc_host *host)",
-    symbol: "mmc_claim_host",
-    file: "include/linux/mmc/host.h",
-    line: 250,
-    x: 2245.0,
-    y: 618.0,
-    width: 395.0,
-    height: 51.0,
-    protocol: "Host Mutex Lock",
-    summary: "Acquire exclusive claim lock on the host controller for bus transactions",
-    details: "Acquires exclusive bus lock on the host controller. Because SD bus commands and multi-block DMA transfers require atomic access to physical command and data lines, callers claim the host before issuing commands and release it when complete.",
-    code: `static inline void mmc_claim_host(struct mmc_host *host)
-{
-    __mmc_claim_host(host, NULL);
-}`
-  },
-  {
-    id: "box-18",
-    step: 18,
-    phase: "card_init",
-    phaseName: "Card Init & Device Model",
-    label: "mmc_set_ios()",
-    symbol: "mmc_set_ios",
-    file: "drivers/mmc/core/core.c",
-    line: 950,
-    x: 1259.0,
-    y: 717.0,
-    width: 155.0,
-    height: 51.0,
-    protocol: "Host IOS Configuration",
-    summary: "Pass updated clock, power, voltage, and bus configuration to host driver",
-    details: "Synchronizes struct mmc_ios (I/O settings) with physical hardware registers: updates clock frequency (up to 25MHz/50MHz/SDR104), bus width (1-bit vs 4-bit vs 8-bit), signal voltage (3.3V vs 1.8V UHS-I), and power state.",
-    code: `static void mmc_set_ios(struct mmc_host *host)
-{
-    struct mmc_ios *ios = &host->ios;
-
-    pr_debug("%s: clock %uHz busmode %u powermode %u cs %u Vdd %u width %u timing %u\\n",
-             mmc_hostname(host), ios->clock, ios->bus_mode,
-             ios->power_mode, ios->chip_select, ios->vdd,
-             ios->bus_width, ios->timing);
-
-    host->ops->set_ios(host, ios);
-}`
-  },
-  {
     id: "box-19",
-    step: 19,
+    step: 18,
+    callerId: "box-16",
+    calleeIds: ["box-20"],
     phase: "card_init",
-    phaseName: "Card Init & Device Model",
+    phaseName: "Card Init & Device",
     label: "device_add(&card->dev)",
     symbol: "device_add",
     file: "drivers/base/core.c",
@@ -583,7 +617,7 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
     height: 51.0,
     protocol: "Linux Device Model",
     summary: "Register device with sysfs, notify userspace (uevent), and add to bus",
-    details: "Standard Linux kernel device model registration. Creates sysfs directories under /sys/bus/mmc/devices/, issues a KOBJ_ADD uevent for udev rules to process, links parent/child power management, and invokes bus_probe_device(dev) to bind a matching driver.",
+    details: "Called by mmc_add_card(). Creates sysfs directories under /sys/bus/mmc/devices/, issues a KOBJ_ADD uevent for udev rules to process, links parent/child power management, and invokes bus_probe_device(dev) to find a matching driver.",
     code: `int device_add(struct device *dev)
 {
     struct device *parent = NULL;
@@ -601,9 +635,11 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
   },
   {
     id: "box-20",
-    step: 20,
+    step: 19,
+    callerId: "box-19",
+    calleeIds: ["box-21"],
     phase: "card_init",
-    phaseName: "Card Init & Device Model",
+    phaseName: "Card Init & Device",
     label: "bus_probe_device(dev)",
     symbol: "bus_probe_device",
     file: "drivers/base/core.c",
@@ -614,7 +650,7 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
     height: 51.0,
     protocol: "Bus Driver Match",
     summary: "Probe driver matches on bus to bind appropriate driver to new card device",
-    details: "Iterates through the drivers registered on dev->bus (mmc_bus_type). Compares card attributes with driver id_tables. Matches the MMC Block driver (mmc_blk_driver) and invokes driver->probe(dev) -> mmc_blk_probe().",
+    details: "Called by device_add(). Iterates through drivers registered on mmc_bus_type. Matches the MMC Block driver (mmc_blk_driver) and invokes driver->probe(dev) -> mmc_blk_probe().",
     code: `void bus_probe_device(struct device *dev)
 {
     struct bus_type *bus = dev->bus;
@@ -633,11 +669,17 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
     mutex_unlock(&bus->p->mutex);
 }`
   },
+
+  // =========================================================================
+  // Phase 6: MMC Block Driver & Disk Creation
+  // =========================================================================
   {
     id: "box-21",
-    step: 21,
+    step: 20,
+    callerId: "box-20",
+    calleeIds: ["box-22", "box-23", "box-24"],
     phase: "block",
-    phaseName: "Block Layer & Disk",
+    phaseName: "Block & Disk",
     label: "mmc_blk_probe(struct mmc_card *card) /*in block.c*/",
     symbol: "mmc_blk_probe",
     file: "drivers/mmc/card/block.c",
@@ -648,7 +690,7 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
     height: 51.0,
     protocol: "MMC Block Driver Probe",
     summary: "MMC block device driver probe callback handling block layer integration",
-    details: "Called when the MMC bus matches card type MMC_TYPE_SD_COMBO or MMC_TYPE_SD. Allocates block driver private data, configures read-ahead and bounce buffers, discovers hardware partitions (RPMB, boot partitions), and registers the main gendisk disk device.",
+    details: "Invoked by bus driver probing when mmc_bus_type matches card type MMC_TYPE_SD. In sequence: 1) Allocates block data structure via mmc_blk_alloc(), 2) Discovers hardware partitions via mmc_blk_alloc_parts(), 3) Attaches and publishes disk via mmc_add_disk().",
     code: `static int mmc_blk_probe(struct mmc_card *card)
 {
     struct mmc_blk_data *md;
@@ -670,9 +712,11 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
   },
   {
     id: "box-22",
-    step: 22,
+    step: 21,
+    callerId: "box-21",
+    calleeIds: ["box-25"],
     phase: "block",
-    phaseName: "Block Layer & Disk",
+    phaseName: "Block & Disk",
     label: "mmc_blk_alloc(struct mmc_card *card)",
     symbol: "mmc_blk_alloc",
     file: "drivers/mmc/card/block.c",
@@ -683,7 +727,7 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
     height: 51.0,
     protocol: "Queue & Data Allocation",
     summary: "Allocate mmc_blk_data structure and request queue for block transfer",
-    details: "Allocates struct mmc_blk_data, initializes the blk-mq request queue (or classic request queue), sets queue parameters (max sector size, max segment size, discard/trim capabilities), and sets up the gendisk structure.",
+    details: "Called by mmc_blk_probe(). Allocates struct mmc_blk_data and initializes the block request queue (blk-mq). Invokes mmc_blk_alloc_req() to allocate device minor numbers.",
     code: `static struct mmc_blk_data *mmc_blk_alloc(struct mmc_card *card)
 {
     struct mmc_blk_data *md;
@@ -701,10 +745,48 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
 }`
   },
   {
+    id: "box-25",
+    step: 22,
+    callerId: "box-22",
+    calleeIds: [],
+    phase: "block",
+    phaseName: "Block & Disk",
+    label: "mmc_blk_alloc_req() /* minor number allocation */",
+    symbol: "mmc_blk_alloc_req",
+    file: "drivers/mmc/card/block.c",
+    line: 2180,
+    x: 1226.0,
+    y: 1111.0,
+    width: 955.0,
+    height: 65.0,
+    protocol: "Minor Numbers",
+    summary: "Allocate queue request and device minor numbers (step of 8 minors per card)",
+    details: "Called by mmc_blk_alloc(). Allocates unique device minor numbers using kernel ID allocation (IDA). Reserves a chunk of 8 or 16 minors per card to support partition nodes (/dev/mmcblk0p1 ... p7).",
+    code: `static struct mmc_blk_data *mmc_blk_alloc_req(struct mmc_card *card,
+                                              struct device *parent,
+                                              sector_t size,
+                                              bool default_ro,
+                                              const char *subname,
+                                              int area_type)
+{
+    int devidx;
+
+    devidx = ida_alloc_max(&mmc_blk_ida, max_devices - 1, GFP_KERNEL);
+    if (devidx < 0)
+        return ERR_PTR(devidx);
+
+    snprintf(disk->disk_name, sizeof(disk->disk_name),
+             "mmcblk%d%s", devidx, subname ? subname : "");
+    ...
+}`
+  },
+  {
     id: "box-23",
     step: 23,
+    callerId: "box-21",
+    calleeIds: [],
     phase: "block",
-    phaseName: "Block Layer & Disk",
+    phaseName: "Block & Disk",
     label: "mmc_blk_alloc_parts()",
     symbol: "mmc_blk_alloc_parts",
     file: "drivers/mmc/card/block.c",
@@ -715,7 +797,7 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
     height: 51.0,
     protocol: "Hardware Partitions",
     summary: "Allocate hardware partitions (boot partitions, RPMB, GP partitions)",
-    details: "For eMMC and modern SD specifications with physical partitions: examines EXT_CSD to check for Boot Partition 1 & 2, RPMB (Replay Protected Memory Block), and General Purpose Partitions. Creates child block devices (e.g. mmcblk0boot0, mmcblk0rpmb).",
+    details: "Called by mmc_blk_probe(). Examines card partitioning structures to check for Boot Partition 1 & 2, RPMB, and general purpose partitions. Creates dedicated sub-devices (e.g. mmcblk0boot0, mmcblk0rpmb).",
     code: `static int mmc_blk_alloc_parts(struct mmc_card *card, struct mmc_blk_data *md)
 {
     int idx, ret = 0;
@@ -740,8 +822,10 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
   {
     id: "box-24",
     step: 24,
+    callerId: "box-21",
+    calleeIds: ["box-26"],
     phase: "block",
-    phaseName: "Block Layer & Disk",
+    phaseName: "Block & Disk",
     label: "mmc_add_disk(struct mmc_blk_data *md)",
     symbol: "mmc_add_disk",
     file: "drivers/mmc/card/block.c",
@@ -752,7 +836,7 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
     height: 51.0,
     protocol: "Disk Publishing",
     summary: "Attach gendisk structure to block device and register with kernel",
-    details: "Configures disk name format (e.g., mmcblk0 or mmcblk1), assigns major/minor numbers, sets capacity in 512-byte sectors, and calls device_add_disk() / add_disk(). This makes the storage device visible in /proc/partitions and /dev/.",
+    details: "Called by mmc_blk_probe(). Configures disk capacity, sector sizes, disk name format (e.g., mmcblk0), and calls add_disk() / device_add_disk().",
     code: `static int mmc_add_disk(struct mmc_blk_data *md)
 {
     int ret;
@@ -768,42 +852,10 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
   {
     id: "box-25",
     step: 25,
+    callerId: "box-24",
+    calleeIds: [],
     phase: "block",
-    phaseName: "Block Layer & Disk",
-    label: "mmc_blk_alloc_req() /* minor number allocation */",
-    symbol: "mmc_blk_alloc_req",
-    file: "drivers/mmc/card/block.c",
-    line: 2180,
-    x: 1226.0,
-    y: 1111.0,
-    width: 955.0,
-    height: 65.0,
-    protocol: "Minor Numbers",
-    summary: "Allocate queue request and device minor numbers (step of 8 minors per card)",
-    details: "Allocates unique device minor numbers using kernel ID allocation (IDA). In Linux MMC subsystem, each disk reserves a chunk (typically 8 or 16 minors) to allow partition nodes: /dev/mmcblk0 (minor 0), /dev/mmcblk0p1 (minor 1), up to /dev/mmcblk0p7.",
-    code: `static struct mmc_blk_data *mmc_blk_alloc_req(struct mmc_card *card,
-                                              struct device *parent,
-                                              sector_t size,
-                                              bool default_ro,
-                                              const char *subname,
-                                              int area_type)
-{
-    int devidx;
-
-    devidx = ida_alloc_max(&mmc_blk_ida, max_devices - 1, GFP_KERNEL);
-    if (devidx < 0)
-        return ERR_PTR(devidx);
-
-    snprintf(disk->disk_name, sizeof(disk->disk_name),
-             "mmcblk%d%s", devidx, subname ? subname : "");
-    ...
-}`
-  },
-  {
-    id: "box-26",
-    step: 26,
-    phase: "block",
-    phaseName: "Block Layer & Disk",
+    phaseName: "Block & Disk",
     label: "add_disk(struct gendisk *disk)",
     symbol: "add_disk",
     file: "block/genhd.c",
@@ -814,7 +866,7 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
     height: 51.0,
     protocol: "Kernel Block Core",
     summary: "Publish block device disk to userspace, scan partition table, enable I/O",
-    details: "The culminating step of block device creation: 1) Registers /dev/mmcblkX with devtmpfs, 2) Triggers kernel partition table scanner (reads MBR / GPT), 3) Creates child partition devices /dev/mmcblkXp1...pN, 4) Emits uevents so userspace managers (udev / systemd / mount) can mount filesystems.",
+    details: "Called by mmc_add_disk(). Publishes /dev/mmcblkX to userspace via devtmpfs, triggers kernel partition table scanner (reads MBR / GPT), creates child partition devices /dev/mmcblkXp1...pN, and emits uevents so mount managers can mount filesystems.",
     code: `int device_add_disk(struct device *parent, struct gendisk *disk,
                     const struct attribute_group **groups)
 {
@@ -828,6 +880,29 @@ static void mmc_sd_attach_bus_ops(struct mmc_host *host)
     /* Scans MBR / GPT partitions and emits uevents */
     disk_scan_partitions(disk, FMODE_READ);
     return 0;
+}`
+  },
+  {
+    id: "box-17",
+    step: 26,
+    callerId: "box-10",
+    calleeIds: [],
+    phase: "block",
+    phaseName: "Block & Disk",
+    label: "mmc_claim_host(struct mmc_host *host)",
+    symbol: "mmc_claim_host",
+    file: "include/linux/mmc/host.h",
+    line: 250,
+    x: 2245.0,
+    y: 618.0,
+    width: 395.0,
+    height: 51.0,
+    protocol: "Host Mutex Lock",
+    summary: "Acquire exclusive claim lock on the host controller for bus transactions",
+    details: "Acquires exclusive bus lock on the host controller. Used during final UHS initialization or atomic multi-block operations to prevent concurrent bus contention before releasing back to the scheduler.",
+    code: `static inline void mmc_claim_host(struct mmc_host *host)
+{
+    __mmc_claim_host(host, NULL);
 }`
   }
 ];
